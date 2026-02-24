@@ -1,0 +1,21 @@
+{
+  "name": "upload-service",
+  "version": "1.0.0",
+  "description": "Responsible for uploading a file",
+  "main": "upload.js",
+  "scripts": {
+    "test": "nodemon test.js",
+    "start": "nodemon upload.js"
+  },
+  "author": "Shuvo",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.971.0",
+    "bullmq": "^5.67.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "ioredis": "^5.9.2",
+    "multer": "^2.0.2"
+  }
+}

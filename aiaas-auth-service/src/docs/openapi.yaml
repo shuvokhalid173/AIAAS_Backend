@@ -1,0 +1,456 @@
+openapi: 3.0.3
+
+info:
+  title: AIaaS Platform API
+  description: Authentication and AI as a Service platform API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: Authentication APIs
+
+  - name: AIaaS Service
+    description: AI as a Service public APIs
+
+  - name: Org
+    description: Organization management APIs
+
+
+paths:
+
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+
+        "400":
+          $ref: '#/components/responses/BadRequest'
+
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+        "400":
+          $ref: '#/components/responses/BadRequest'
+
+
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+
+      responses:
+        "200":
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+        "400":
+          $ref: '#/components/responses/BadRequest'
+
+
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+
+      responses:
+        "200":
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+
+
+  /aiaas-services:
+    get:
+      tags:
+        - AIaaS Service
+      summary: Get all AIaaS services (Public)
+      responses:
+        "200":
+          description: List of AIaaS services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AiaasService'
+
+
+
+  /aiaas-service/{id}:
+    get:
+      tags:
+        - AIaaS Service
+      summary: Get AIaaS service by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+      responses:
+        "200":
+          description: AIaaS service found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiaasService'
+
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+
+  /orgs:
+    post:
+      tags:
+        - Org
+      summary: Create a new organization
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgCreateRequest'
+
+      responses:
+        "201":
+          description: Organization created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Org'
+
+        "400":
+          $ref: '#/components/responses/BadRequest'
+
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+
+  /orgs/u/{userId}:
+    get:
+      tags:
+        - Org
+      summary: Get all organizations for a user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+      responses:
+        "200":
+          description: List of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgList'
+
+        "400":
+          $ref: '#/components/responses/BadRequest'
+
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+
+
+
+components:
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+
+        email:
+          type: string
+          example: user@example.com
+
+        password:
+          type: string
+          example: StrongPassword123!
+
+        phone:
+          type: string
+          example: "+8801712345678"
+
+
+    RegisterResponse:
+      type: object
+      properties:
+
+        message:
+          type: string
+          example: User registered successfully
+
+        user:
+          type: object
+          properties:
+
+            userId:
+              type: string
+              example: "uuid"
+
+            email:
+              type: string
+              example: user@example.com
+
+
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+
+        email:
+          type: string
+          example: user@example.com
+
+        password:
+          type: string
+          example: password123
+
+
+
+    RefreshRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+
+        refreshToken:
+          type: string
+          example: "long_refresh_token"
+
+
+
+    LogoutRequest:
+      type: object
+      required:
+        - sessionId
+      properties:
+
+        sessionId:
+          type: string
+          example: "uuid"
+
+
+
+    LoginResponse:
+      type: object
+      properties:
+
+        message:
+          type: string
+          example: Login successful
+
+        token:
+          $ref: '#/components/schemas/TokenPair'
+
+
+
+    TokenPair:
+      type: object
+      properties:
+
+        accessToken:
+          type: string
+          example: "jwt_token"
+
+        refreshToken:
+          type: string
+          example: "refresh_token"
+
+
+
+    MessageResponse:
+      type: object
+      properties:
+
+        message:
+          type: string
+          example: Success
+
+
+
+    ErrorResponse:
+      type: object
+      properties:
+
+        message:
+          type: string
+          example: Error message
+
+
+
+    AiaasService:
+      type: object
+      properties:
+
+        id:
+          type: string
+          example: "uuid"
+
+        name:
+          type: string
+          example: "Text Generation API"
+
+        description:
+          type: string
+          example: "Generate text using AI"
+
+        created_at:
+          type: string
+          format: date-time
+
+    OrgCreateRequest:
+      type: object
+      required:
+        - name
+        - slug
+        - created_by
+      properties:
+        name:
+          type: string
+          example: "Example Organization"
+        description:
+          type: string
+          example: "A short description of the organization"
+        slug:
+          type: string
+          example: "example-org"
+        website:
+          type: string
+          example: "https://example.org"
+        logo_url:
+          type: string
+          example: "https://example.org/logo.png"
+        created_by:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    Org:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          example: "Example Organization"
+        description:
+          type: string
+          example: "A short description of the organization"
+        slug:
+          type: string
+          example: "example-org"
+        website:
+          type: string
+          example: "https://example.org"
+        logo_url:
+          type: string
+          example: "https://example.org/logo.png"
+
+    OrgList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Org'
+
+
+
+  responses:
+
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
