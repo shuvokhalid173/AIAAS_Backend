@@ -144,28 +144,31 @@ async function createSession(user, credential_version, ip, userAgent, orgId = nu
 
     return {
         accessToken,
-        refreshToken
+        refreshToken: sessionId + ':' + refreshToken
     };
 }
 
-async function refresh(refreshToken, orgId = null) {
+async function refresh(refreshTokenPayload, orgId = null) {
+    const [sessionId, refreshToken] = refreshTokenPayload.split(':');
+
+    if (!sessionId || !refreshTokenPayload) {
+        throw new Error('Invalid refresh token');
+    }
 
     const [sessions] = await mysqlDb.query(
         `SELECT * FROM auth_sessions 
-         WHERE is_revoked = 0`
+         WHERE is_revoked = 0 AND id = ?`,
+        [sessionId]
     );
 
-    let matchedSession = null;
-
-    for (const session of sessions) {
-        const match = await bcrypt.compare(refreshToken, session.refresh_token_hash);
-        if (match) {
-            matchedSession = session;
-            break;
-        }
+    if (sessions.length === 0) {
+        throw new Error('Invalid refresh token');
     }
 
-    if (!matchedSession) {
+    const matchedSession = sessions[0];
+
+    const isMatch = await bcrypt.compare(refreshToken, matchedSession.refresh_token_hash);
+    if (!isMatch) {
         throw new Error('Invalid refresh token');
     }
 
@@ -204,7 +207,7 @@ async function refresh(refreshToken, orgId = null) {
 
     return {
         accessToken,
-        refreshToken: newRefreshToken
+        refreshToken: matchedSession.id + ':' + newRefreshToken
     };
 }
 

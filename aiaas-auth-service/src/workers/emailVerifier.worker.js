@@ -1,6 +1,6 @@
 const { Worker } = require('../infrastructure/queue');
 const axios = require('axios');
-const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:3001/api';
+const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:3000/api';
 const redisClient = require('../infrastructure/redis.db');
 
 // Create a worker to process from the 'emailQueue' queue

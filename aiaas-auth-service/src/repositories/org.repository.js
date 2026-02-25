@@ -103,8 +103,53 @@ async function isUserMemberOfOrg(userId, orgId) {
     }
 }
 
+async function initializeRolesAndPermissionsForNewlyCreatedOrg(orgId, createdBy) {
+    // I'll perform db operation here now. Later I'll use a separate repository file for this for db abstraction  
+    const connection = await db.getConnection();
+
+    // fetch all permissions (provided by aiaas platform) which are not specific to any aiias_service
+    const [permissions] = await connection.query(
+        'SELECT id, name FROM auth_permissions WHERE aiias_service_id IS NULL'
+    );
+
+    await connection.beginTransaction();
+
+    try {
+        // fist step: create role Org_Owner into auth_roles table
+        const roleId = randomUUID();
+        await connection.query(
+            'INSERT INTO auth_roles (id, name, description, auth_orgs_id) VALUES (?, ?, ?, ?)',
+            [roleId, 'Owner', 'Owner of the organization', orgId]
+        );
+        
+        // second step: assign this role to the creator of the organization
+        const userRoleId = randomUUID();
+        await connection.query(
+            'INSERT INTO auth_user_roles (id, auth_user_id, auth_role_id, auth_org_id ) VALUES (?, ?, ?, ?)',
+            [userRoleId, createdBy, roleId, orgId]
+        );
+
+        // third step: assign the permissions (fetched previously) to the newly created role
+        for (const permission of permissions) {
+            const rolePermissionId = randomUUID();
+            await connection.query(
+                'INSERT INTO auth_roles_permissions (id, auth_roles_id, auth_permissions_id, auth_orgs_id) VALUES (?, ?, ?, ?)',
+                [rolePermissionId, roleId, permission.id, orgId]
+            );
+        }
+        
+        await connection.commit();
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+}
+
 module.exports = {
   insertOrg,
   listOrgsForUser,
   isUserMemberOfOrg,
+  initializeRolesAndPermissionsForNewlyCreatedOrg,
 };

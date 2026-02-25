@@ -5,7 +5,7 @@ const { Queue, redisClient: redisClientForBull } = require('../infrastructure/qu
 const InputValidator = require('../utils/input.validator');
 const authService = require('./auth.service');
 
-const orgInitializationQueue = new Queue('orgInitialSetup', {
+const orgInitializationQueue = new Queue('orgInitializerQueue', {
     connection: redisClientForBull
 });
 
@@ -21,7 +21,7 @@ async function createOrg(orgData) {
         // Insert the organization into the database
         const org = await orgRepository.insertOrg(orgData);
         // Add a job to the queue for any additional setup tasks (e.g., creating roles, permissions, etc.)
-        await orgInitializationQueue.add('initializeOrg', { orgId: org.id });
+        await orgInitializationQueue.add('initializeOrg', { orgId: org.id, createdBy: created_by });
         return org;
     } catch (err) {
         throw err;
