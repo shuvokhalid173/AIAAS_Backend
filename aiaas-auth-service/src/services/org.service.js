@@ -3,6 +3,7 @@ const redisClient = require('../infrastructure/redis');
 const orgRepository = require('../repositories/org.repository');
 const { Queue, redisClient: redisClientForBull } = require('../infrastructure/queue');
 const InputValidator = require('../utils/input.validator');
+const authService = require('./auth.service');
 
 const orgInitializationQueue = new Queue('orgInitialSetup', {
     connection: redisClientForBull
@@ -43,8 +44,26 @@ async function getAllOrgsOfUser(userId) {
     }
 }
 
+async function switchOrg(userId, orgId, sessionId, credential_version, ip, userAgent) {
+    new InputValidator('User ID', userId).required();
+    new InputValidator('Organization ID', orgId).required();
+    new InputValidator('Session ID', sessionId).required();
+    try {
+        // check if the user is a member of the organization
+        await orgRepository.isUserMemberOfOrg(userId, orgId);
+        // logout the user
+        await authService.logout(sessionId);
+        // create new session
+        const newTokens = await authService.createSession({id: userId}, credential_version, ip, userAgent, orgId);
+        return newTokens;
+    } catch (err) {
+        throw err;
+    }
+}
+
 module.exports = {
     createOrg,
-    getAllOrgsOfUser
+    getAllOrgsOfUser,
+    switchOrg
 };
 

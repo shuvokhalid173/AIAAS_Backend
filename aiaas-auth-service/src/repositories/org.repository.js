@@ -85,7 +85,26 @@ async function listOrgsForUser(userId) {
     }
 }
 
+async function isUserMemberOfOrg(userId, orgId) {
+    try {
+        // check user is a member of that organization
+        const [users] = await db.query(
+            'SELECT * FROM auth_orgs_users WHERE user_id = ? AND org_id = ? LIMIT 1',
+            [userId, orgId]
+        );
+
+        if (users.length === 0) {
+            throw new Error('User is not a member of that organization');
+        }
+
+        return true;
+    } catch (err) {
+        throw err;
+    }
+}
+
 module.exports = {
   insertOrg,
   listOrgsForUser,
+  isUserMemberOfOrg,
 };

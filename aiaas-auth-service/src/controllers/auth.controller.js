@@ -14,7 +14,9 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const token = await authService.login(email, password); // token -> { accessToken, refreshToken }
+        const ip =  req.ip;
+        const userAgent = req.headers['user-agent'];
+        const token = await authService.login(email, password, ip, userAgent); // token -> { accessToken, refreshToken }
         res.status(200).json({ message: 'Login successful', token });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -24,7 +26,7 @@ const login = async (req, res) => {
 const refresh = async (req, res) => {
     try {
         const { refreshToken } = req.body;
-        const newTokens = await authService.refresh(refreshToken); // newTokens -> { accessToken, refreshToken }
+        const newTokens = await authService.refresh(refreshToken, null); // newTokens -> { accessToken, refreshToken }
         res.status(200).json({ message: 'Token refreshed successfully', token: newTokens });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -37,7 +39,7 @@ const logout = async (req, res) => {
         await authService.logout(sessionId);
         res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ message: JSON.stringify(error) });
     }
 };
 

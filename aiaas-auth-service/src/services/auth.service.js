@@ -108,6 +108,11 @@ async function login(email, password, ip, userAgent) {
         [null, user.id]
     );
 
+    const tokens = await createSession(user, credential.version, ip, userAgent, null);
+    return tokens;
+}
+
+async function createSession(user, credential_version, ip, userAgent, orgId = null) {
     // create session
     const sessionId = crypto.randomUUID();
 
@@ -119,18 +124,19 @@ async function login(email, password, ip, userAgent) {
 
     await mysqlDb.query(
         `INSERT INTO auth_sessions
-         (id, user_id, refresh_token_hash, expires_at, ip_address, user_agent)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [sessionId, user.id, refreshTokenHash, refreshExpiry, ip, userAgent]
+         (id, user_id, refresh_token_hash, expires_at, ip_address, user_agent, credential_version)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [sessionId, user.id, refreshTokenHash, refreshExpiry, ip, userAgent, credential_version]
     );
 
     const accessToken = jwt.sign(
         {
             sub: user.id,
             sid: sessionId,
-            ver: credential.version,
+            ver: credential_version,
             iss: "auth-service",
-            aud: "api"
+            aud: "api",
+            oid: orgId
         },
         jwtConfig.secret,
         { expiresIn: jwtConfig.expiration }
@@ -142,7 +148,7 @@ async function login(email, password, ip, userAgent) {
     };
 }
 
-async function refresh(refreshToken) {
+async function refresh(refreshToken, orgId = null) {
 
     const [sessions] = await mysqlDb.query(
         `SELECT * FROM auth_sessions 
@@ -178,12 +184,19 @@ async function refresh(refreshToken) {
         [newRefreshHash, matchedSession.id]
     );
 
+    // normal refresh flow for user who already selected an organization
+    if (!orgId) {
+        orgId = matchedSession.auth_org_id || null;
+    }
+
     const accessToken = jwt.sign(
         {
             sub: matchedSession.user_id,
             sid: matchedSession.id,
             iss: "auth-service",
-            aud: "api"
+            aud: "api",
+            oid: orgId,
+            ver: matchedSession.credential_version
         },
         jwtConfig.secret,
         { expiresIn: jwtConfig.expiration }
@@ -197,12 +210,25 @@ async function refresh(refreshToken) {
 
 async function logout(sessionId) {
     try {
+        // check if session exists
+        const [sessions] = await mysqlDb.query(
+            `SELECT * FROM auth_sessions 
+             WHERE id = ? AND is_revoked = 0`,
+            [sessionId]
+        );
+
+        if (sessions.length === 0) {
+            throw new Error('Session not found or already revoked');
+        }
+
         await mysqlDb.query(
             `UPDATE auth_sessions 
             SET is_revoked = 1 
             WHERE id = ?`,
             [sessionId]
         );
+
+        await redisClient.del(`session:${sessionId}`);
     } catch (error) {
         throw "Logout failed";
     }
@@ -229,4 +255,5 @@ module.exports = {
     updateUserAuthStatus,
     refresh,
     logout,
+    createSession
 };

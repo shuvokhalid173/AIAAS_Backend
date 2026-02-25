@@ -22,6 +22,34 @@ tags:
 
 paths:
 
+  /orgs/switch:
+    post:
+      tags:
+        - Org
+      summary: Switch active organization
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgSwitchRequest'
+
+      responses:
+        "200":
+          description: Organization switched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+        "400":
+          $ref: '#/components/responses/BadRequest'
+
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+
   /auth/register:
     post:
       tags:
@@ -382,7 +410,6 @@ components:
       required:
         - name
         - slug
-        - created_by
       properties:
         name:
           type: string
@@ -399,9 +426,6 @@ components:
         logo_url:
           type: string
           example: "https://example.org/logo.png"
-        created_by:
-          type: string
-          example: "550e8400-e29b-41d4-a716-446655440000"
 
     Org:
       type: object
@@ -429,6 +453,15 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Org'
+
+    OrgSwitchRequest:
+      type: object
+      required:
+        - orgId
+      properties:
+        orgId:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
 
 
 
