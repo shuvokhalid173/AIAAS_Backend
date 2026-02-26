@@ -107,9 +107,9 @@ async function initializeRolesAndPermissionsForNewlyCreatedOrg(orgId, createdBy)
     // I'll perform db operation here now. Later I'll use a separate repository file for this for db abstraction  
     const connection = await db.getConnection();
 
-    // fetch all permissions (provided by aiaas platform) which are not specific to any aiias_service
+    // fetch all permissions (provided by aiaas platform) which are not specific to any aiaas_service
     const [permissions] = await connection.query(
-        'SELECT id, name FROM auth_permissions WHERE aiias_service_id IS NULL'
+        'SELECT id, name FROM auth_permissions WHERE aiaas_service_id IS NULL'
     );
 
     await connection.beginTransaction();
