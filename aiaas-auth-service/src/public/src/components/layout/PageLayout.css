@@ -1,0 +1,21 @@
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-layout__main {
+  flex: 1;
+}
+
+.page-layout__footer {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-6) 0;
+  margin-top: var(--space-20);
+}
+
+.page-layout__footer-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+}

@@ -20,6 +20,8 @@ async function createOrg(orgData) {
     try {
         // Insert the organization into the database
         const org = await orgRepository.insertOrg(orgData);
+        // clean redis cache for user orgs
+        await redisClient.del(`user:${created_by}:orgs`);
         // Add a job to the queue for any additional setup tasks (e.g., creating roles, permissions, etc.)
         await orgInitializationQueue.add('initializeOrg', { orgId: org.id, createdBy: created_by });
         return org;

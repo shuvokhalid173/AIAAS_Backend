@@ -124,9 +124,9 @@ async function createSession(user, credential_version, ip, userAgent, orgId = nu
 
     await mysqlDb.query(
         `INSERT INTO auth_sessions
-         (id, user_id, refresh_token_hash, expires_at, ip_address, user_agent, credential_version)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [sessionId, user.id, refreshTokenHash, refreshExpiry, ip, userAgent, credential_version]
+         (id, user_id, auth_org_id, refresh_token_hash, expires_at, ip_address, user_agent, credential_version)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [sessionId, user.id, orgId, refreshTokenHash, refreshExpiry, ip, userAgent, credential_version]
     );
 
     const accessToken = jwt.sign(

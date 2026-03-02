@@ -25,7 +25,8 @@ const login = async (req, res) => {
 
 const refresh = async (req, res) => {
     try {
-        const { refreshToken } = req.body;
+        // take refresh token from cookies
+        const refreshToken = req.cookies.refresh_token;
         const newTokens = await authService.refresh(refreshToken, null); // newTokens -> { accessToken, refreshToken }
         res.status(200).json({ message: 'Token refreshed successfully', token: newTokens });
     } catch (error) {
