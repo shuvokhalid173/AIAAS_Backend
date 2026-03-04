@@ -9,6 +9,7 @@ import LoginPage         from './pages/LoginPage';
 import RegisterPage      from './pages/RegisterPage';
 import DashboardPage     from './pages/DashboardPage';
 import CreateOrgPage     from './pages/CreateOrgPage';
+import OrgPage           from './pages/OrgPage';
 
 export default function App() {
   return (
@@ -28,6 +29,9 @@ export default function App() {
             } />
             <Route path="/orgs/new" element={
               <AuthGuard><CreateOrgPage /></AuthGuard>
+            } />
+            <Route path="/orgs/:slug" element={
+              <AuthGuard><OrgPage /></AuthGuard>
             } />
 
             {/* Catch-all */}

@@ -35,8 +35,20 @@ async function switchOrg(req, res) {
     }
 }
 
+async function getOrgById(req, res) {
+    try {
+        const orgId = req.auth.orgId;
+        const userId = req.auth.userId;
+        const org = await orgService.getOrgById(orgId, userId);
+        res.status(200).json(org);
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+}
+
 module.exports = {
     createOrg,
     getAllOrgsOfUser,
-    switchOrg
+    switchOrg,
+    getOrgById
 };

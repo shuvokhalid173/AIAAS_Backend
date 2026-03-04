@@ -5,7 +5,7 @@ import Button from '../ui/Button';
 import './Navbar.css';
 
 export default function Navbar() {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, activeOrg } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
 
@@ -48,6 +48,13 @@ export default function Navbar() {
           {isAuthenticated && (
             <NavLink to="/dashboard" className={({ isActive }) => `navbar__link ${isActive ? 'active' : ''}`}>
               Dashboard
+            </NavLink>
+          )}
+
+          {/* Org link will only show if (isAuthenticated && user.oid && activeOrg)*/}
+          {isAuthenticated && user.oid && activeOrg && (
+            <NavLink to={`/orgs/${activeOrg.slug}`} className={({ isActive }) => `navbar__link ${isActive ? 'active' : ''}`}>
+              { activeOrg.slug.toUpperCase() }
             </NavLink>
           )}
         </div>

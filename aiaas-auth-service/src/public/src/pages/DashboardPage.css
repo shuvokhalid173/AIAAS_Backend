@@ -70,9 +70,9 @@
 /* Org layout */
 .dashboard__orgs-layout {
   display: flex;
-  gap: var(--space-6);
-  align-items: flex-start;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--space-8);
+  align-items: stretch;
 }
 
 /* Active org card */

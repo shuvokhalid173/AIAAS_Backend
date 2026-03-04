@@ -37,7 +37,11 @@ export default function DashboardPage() {
       .finally(() => setLoading(false));
   }, [user?.sub]);
 
-  const handleOrgSwitch = (org) => setActiveOrg(org);
+  const handleOrgSwitch = (org) => {
+    setActiveOrg(org);
+    // reload the page to update navbar
+    window.location.reload();
+  };
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -108,13 +112,13 @@ export default function DashboardPage() {
                 />
 
                 {activeOrg && (
-                  <div className="dashboard__active-org animate-fade-in">
+                  <div style={{cursor: 'pointer'}} onClick={() => navigate(`/orgs/${activeOrg.slug}`)} className="dashboard__active-org animate-fade-in">
                     <div className="dashboard__org-card">
                       <div className="dashboard__org-header">
                         <div className="dashboard__org-avatar">
                           {activeOrg.name?.[0]?.toUpperCase()}
                         </div>
-                        <div>
+                        <div> 
                           <h3 className="dashboard__org-name">{activeOrg.name}</h3>
                           {activeOrg.slug && (
                             <p className="dashboard__org-slug">/{activeOrg.slug}</p>
@@ -128,11 +132,13 @@ export default function DashboardPage() {
 
                       <div className="dashboard__org-meta">
                         {activeOrg.website && (
+                          // when click on anchor tag, prevent parent div click event
                           <a
                             href={activeOrg.website}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="dashboard__org-link"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             🌐 {activeOrg.website}
                           </a>

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import * as authApi from '../api/auth.api';
+import * as orgApi from '../api/org.api';
 
 const AuthContext = createContext(null);
 
@@ -18,6 +19,7 @@ function decodeJwtPayload(token) {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);       // decoded JWT payload
+  const [activeOrg, setActiveOrg] = useState(null);
   const [loading, setLoading] = useState(true); // hydrating from storage
 
   // Hydrate on mount
@@ -27,6 +29,12 @@ export function AuthProvider({ children }) {
       const payload = decodeJwtPayload(storedToken);
       if (payload && payload.exp * 1000 > Date.now()) {
         setUser(payload);
+        if (payload.oid) {
+          // fetch active org
+          orgApi.getOrg(payload.oid).then(({ data }) => {
+            setActiveOrg(data);
+          });
+        }
       } else {
         // call route /auth/refresh
         authApi.refresh().then(({ data }) => {
@@ -80,6 +88,8 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+
+
   const value = {
     user,
     isAuthenticated: !!user,
@@ -88,6 +98,8 @@ export function AuthProvider({ children }) {
     register,
     logout,
     storeTokens,
+    activeOrg,
+    setActiveOrg,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

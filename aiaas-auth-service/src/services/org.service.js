@@ -63,9 +63,23 @@ async function switchOrg(userId, orgId, sessionId, credential_version, ip, userA
     }
 }
 
+async function getOrgById(orgId, userId) {
+    new InputValidator('Organization ID', orgId).required();
+    new InputValidator('User ID', userId).required();
+    try {
+        // check if the user is a member of the organization
+        await orgRepository.isUserMemberOfOrg(userId, orgId);
+        const org = await orgRepository.getOrgById(orgId);
+        return org;
+    } catch (err) {
+        throw err;
+    }
+}
+
 module.exports = {
     createOrg,
     getAllOrgsOfUser,
-    switchOrg
+    switchOrg,
+    getOrgById
 };
 

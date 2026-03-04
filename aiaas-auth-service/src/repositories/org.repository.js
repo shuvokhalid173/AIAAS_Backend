@@ -147,9 +147,22 @@ async function initializeRolesAndPermissionsForNewlyCreatedOrg(orgId, createdBy)
     }
 }
 
+async function getOrgById(orgId) {
+    try {
+        const [rows] = await db.query(
+            'SELECT * FROM auth_orgs WHERE id = ? LIMIT 1',
+            [orgId]
+        );
+        return rows[0];
+    } catch (err) {
+        throw err;
+    }
+}
+
 module.exports = {
   insertOrg,
   listOrgsForUser,
   isUserMemberOfOrg,
   initializeRolesAndPermissionsForNewlyCreatedOrg,
+  getOrgById,
 };
