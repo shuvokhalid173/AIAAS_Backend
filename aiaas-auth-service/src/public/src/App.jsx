@@ -30,6 +30,9 @@ export default function App() {
             <Route path="/orgs/new" element={
               <AuthGuard><CreateOrgPage /></AuthGuard>
             } />
+            <Route path="/orgs" element={
+              <AuthGuard><OrgPage /></AuthGuard>
+            } />
             <Route path="/orgs/:slug" element={
               <AuthGuard><OrgPage /></AuthGuard>
             } />
