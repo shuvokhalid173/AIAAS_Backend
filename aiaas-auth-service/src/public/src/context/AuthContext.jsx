@@ -85,6 +85,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('access_token');
       Cookies.remove('refresh_token');
       setUser(null);
+      setActiveOrg(null);
     }
   }, []);
 
