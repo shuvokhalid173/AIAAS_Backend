@@ -22,7 +22,7 @@ export default function LandingPage() {
       <section className="hero">
         <div className="hero__bg-glow" aria-hidden="true" />
         <div className="container hero__content animate-fade-in-up">
-          <div className="tag">🚀 AI as a Service Platform</div>
+          <div className="tag">AI as a Service Platform</div>
           <h1 className="hero__title">
             Power your business with
             <span className="gradient-text"> AI-driven</span> services

@@ -76,10 +76,24 @@ async function getOrgById(orgId, userId) {
     }
 }
 
+async function getAllServicesOfOrg(orgId, userId) {
+    new InputValidator('Organization ID', orgId).required();
+    new InputValidator('User ID', userId).required();
+    try {
+        // check if the user is a member of the organization
+        await orgRepository.isUserMemberOfOrg(userId, orgId);
+        const services = await orgRepository.getAllServicesOfOrg(orgId);
+        return services;
+    } catch (err) {
+        throw err;
+    }
+}
+
 module.exports = {
     createOrg,
     getAllOrgsOfUser,
     switchOrg,
-    getOrgById
+    getOrgById,
+    getAllServicesOfOrg
 };
 

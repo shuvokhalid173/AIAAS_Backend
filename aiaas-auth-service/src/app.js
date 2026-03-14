@@ -4,6 +4,7 @@ const cors = require('cors');
 const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
+const path = require("path");
 
 const { auth, health, aiaasService, org } = require('./routes');
 const swaggerDocument = YAML.load("./src/docs/openapi.yaml");
@@ -38,6 +39,10 @@ app.use(cookieParser());
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get("/openapi.json", (req, res) => {
     res.json(swaggerDocument);
+});
+
+app.get("/chatbot-client.js", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "chatbot-client.js"));
 });
 
 app.use('/api/health', health);

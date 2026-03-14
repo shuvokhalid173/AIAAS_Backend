@@ -13,7 +13,7 @@ export default function OrgPage() {
     <PageLayout>
       <div className="container org-page-container">
         <OrgPageSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <OrgPageContent activeTab={activeTab} />
+        <OrgPageContent activeTab={activeTab} orgId={activeOrg?.id} />
       </div>
     </PageLayout>
   );

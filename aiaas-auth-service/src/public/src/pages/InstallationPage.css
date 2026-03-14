@@ -1,0 +1,88 @@
+/* installation-page.css */
+
+.installation-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.installation-page__back {
+  margin-bottom: 1.5rem;
+}
+
+.installation-page__card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.installation-page__header {
+  margin-bottom: 2rem;
+}
+
+.installation-page__title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.installation-page__description {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.installation-page__body {
+  margin-bottom: 2rem;
+}
+
+.installation-page__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .installation-page {
+    padding: 1rem 0.75rem;
+  }
+
+  .installation-page__card {
+    padding: 1.5rem;
+  }
+
+  .installation-page__title {
+    font-size: 1.5rem;
+  }
+
+  .installation-page__footer {
+    flex-direction: column;
+  }
+}
+
+.installation-page__installation-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.installation-page__installation-method {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}

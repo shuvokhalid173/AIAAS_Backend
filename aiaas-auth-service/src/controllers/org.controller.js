@@ -39,8 +39,23 @@ async function getOrgById(req, res) {
     try {
         const orgId = req.auth.orgId;
         const userId = req.auth.userId;
+        // const orgIdFromPayload = req.params.orgId;
+        // if (orgId !== orgIdFromPayload) {
+        //     return res.status(403).json({ message: 'Forbidden' });
+        // }
         const org = await orgService.getOrgById(orgId, userId);
         res.status(200).json(org);
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+}
+
+async function getAllServicesOfOrg(req, res) {
+    try {
+        const orgId = req.auth.orgId;
+        const userId = req.auth.userId;
+        const services = await orgService.getAllServicesOfOrg(orgId, userId);
+        res.status(200).json(services);
     } catch (error) {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
@@ -50,5 +65,6 @@ module.exports = {
     createOrg,
     getAllOrgsOfUser,
     switchOrg,
-    getOrgById
+    getOrgById,
+    getAllServicesOfOrg
 };

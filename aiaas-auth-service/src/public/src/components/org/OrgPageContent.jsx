@@ -1,6 +1,8 @@
 import './OrgPageContent.css';
+import { Link } from 'react-router-dom';
+import OrgOwnedServices from './OrgOwnedServices';
 
-export default function OrgPageContent({ activeTab }) {
+export default function OrgPageContent({ activeTab, orgId }) {
   const renderContent = () => {
     switch (activeTab) {
       case "Dashboard":
@@ -11,6 +13,13 @@ export default function OrgPageContent({ activeTab }) {
             <div className="org-page-content__placeholder glass">
               <span className="gradient-text">Dashboard Widgets Coming Soon</span>
             </div>
+          </div>
+        );
+
+      case "Owned Services":
+        return (
+          <div className="org-page-content__section animate-fade-in-up">
+            <OrgOwnedServices orgId={orgId} />
           </div>
         );
       case "Settings":

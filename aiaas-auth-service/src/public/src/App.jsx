@@ -10,6 +10,7 @@ import RegisterPage      from './pages/RegisterPage';
 import DashboardPage     from './pages/DashboardPage';
 import CreateOrgPage     from './pages/CreateOrgPage';
 import OrgPage           from './pages/OrgPage';
+import InstallationPage  from './pages/InstallationPage';
 
 export default function App() {
   return (
@@ -35,6 +36,9 @@ export default function App() {
             } />
             <Route path="/orgs/:slug" element={
               <AuthGuard><OrgPage /></AuthGuard>
+            } />
+            <Route path="/services/:id/installation" element={
+              <AuthGuard><InstallationPage /></AuthGuard>
             } />
 
             {/* Catch-all */}

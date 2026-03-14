@@ -11,5 +11,7 @@ router.get('/orgs/u/:userId', isAuthenticated, orgController.getAllOrgsOfUser);
 router.post('/orgs/switch', isAuthenticated, orgController.switchOrg);
 // get organization by id route
 router.get('/orgs/:orgId', isAuthenticated, orgController.getOrgById);
+// get all services of an organization route
+router.get('/orgs/:orgId/services', isAuthenticated, orgController.getAllServicesOfOrg);
 
 module.exports = router;

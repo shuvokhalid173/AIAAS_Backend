@@ -98,14 +98,29 @@ export default function ServiceDetailPage() {
             </div>
 
             <div className="service-detail__actions">
-              <Button
-                variant="primary"
-                size="lg"
-                disabled
-                title="Purchasing will be available soon"
-              >
-                Get Service — Coming Soon
+              {
+                service.is_ready && (
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    onClick={() => navigate(`/services/${service.id}/installation`)}
+                  >
+                    Get Service
+                  </Button>
+                )
+              }
+              {
+                !service.is_ready && (
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    disabled
+                    title="Purchasing will be available soon"
+                  >
+                    Comming soon...
               </Button>
+                )
+              }
               <Button variant="ghost" size="lg" onClick={() => navigate('/')}>
                 View all services
               </Button>

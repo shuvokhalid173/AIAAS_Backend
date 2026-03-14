@@ -244,6 +244,63 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 
 
+  /orgs/{orgId}:
+    get:
+      tags:
+        - Org
+      summary: Get organization by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+      responses:
+        "200":
+          description: Organization found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Org'
+
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+  /orgs/{orgId}/services:
+    get:
+      tags:
+        - Org
+      summary: Get all services of an organization
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+      responses:
+        "200":
+          description: List of services
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceList'
+
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+
+        "404":
+          $ref: '#/components/responses/NotFound'
 
 components:
 
@@ -462,6 +519,11 @@ components:
         orgId:
           type: string
           example: "550e8400-e29b-41d4-a716-446655440000"
+
+    ServiceList:
+      type: array
+      items:
+        $ref: '#/components/schemas/AiaasService'
 
 
 

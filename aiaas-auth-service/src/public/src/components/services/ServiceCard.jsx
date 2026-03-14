@@ -43,15 +43,31 @@ export default function ServiceCard({ service }) {
         >
           Details
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled
-          title="Coming soon"
-          id={`get-btn-${service.id}`}
-        >
-          Get <span className="service-card__soon">Soon</span>
-        </Button>
+        {
+          service.is_ready && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(`/services/${service.id}/installation`)}
+              id={`get-btn-${service.id}`}
+            >
+              Get
+            </Button>
+          )
+        }
+
+        {
+          !service.is_ready && (
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled
+              title="Coming soon"
+              id={`get-btn-${service.id}`}
+            >
+              Get <span className="service-card__soon">Soon</span>
+            </Button>)
+        }
       </div>
     </article>
   );

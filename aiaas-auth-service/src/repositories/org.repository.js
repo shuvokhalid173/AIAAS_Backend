@@ -159,10 +159,21 @@ async function getOrgById(orgId) {
     }
 }
 
+async function getAllServicesOfOrg(orgId) {
+    try {
+        const sql = 'SELECT aiaas_services.id, aiaas_services.name, aiaas_services.description FROM `auth_orgs_aiaas_services` JOIN aiaas_services ON aiaas_services.id = auth_orgs_aiaas_services.aiaas_service_id WHERE auth_orgs_aiaas_services.org_id = ?;';
+        const [rows] = await db.query(sql, [orgId]);
+        return rows;
+    } catch (err) {
+        throw err;
+    }
+}
+
 module.exports = {
   insertOrg,
   listOrgsForUser,
   isUserMemberOfOrg,
   initializeRolesAndPermissionsForNewlyCreatedOrg,
   getOrgById,
+  getAllServicesOfOrg
 };
